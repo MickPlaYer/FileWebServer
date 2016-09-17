@@ -23,7 +23,7 @@
   </head>
   <body style="margin: 0px;">
     <h1 style="width:1280px;margin:auto;"><%= File.basename(path) %></h1>
-    <video controls autoplay poster="http://<%= request.host + ':3031/background.png' %>">
+    <video controls autoplay poster="http://<%= request.host + ':' + ENV['STATIC_FILE_PORT'] %>/background.png">
       <source src="http://<%= request.host + path %>" type="video/mp4">
     </video>
     <div style="width:1280px;margin:auto;"><a href="javascript:history.back()">Back</a></div>
