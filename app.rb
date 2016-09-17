@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'sinatra'
 require 'thin'
-require 'win32ole'
 require './src/file_helper'
 require './src/disk_helper'
 
