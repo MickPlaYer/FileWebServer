@@ -26,6 +26,6 @@
     <video controls autoplay poster="http://<%= request.host + ':' + ENV['STATIC_FILE_PORT'] %>/background.png">
       <source src="http://<%= request.host + path %>" type="video/mp4">
     </video>
-    <div style="width:1280px;margin:auto;"><a href="javascript:history.back()">Back</a></div>
+    <div style="width:1280px;margin:auto;"><a href="http://<%= request.host + path %>/..">Back</a></div>
   </body>
 </html>
