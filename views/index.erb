@@ -147,6 +147,10 @@
         document.getElementById('file_be_move').innerText = file_name;
         document.getElementById('file_name_be_move').value = file_name;
       }
+      function UploadFile() {
+        document.getElementById('back_dock').style.display = 'block';
+        document.getElementById('upload_file_form').style.display = 'block';
+      }
       function ZipDir(index) {
         var file = document.getElementById('file_' + index);
         var folder_name = file.getElementsByTagName('input')[0]['value'];
@@ -172,6 +176,7 @@
       function HideAll() {
         document.getElementById('back_dock').style.display = 'none';
         document.getElementById('move_file_form').style.display = 'none';
+        document.getElementById('upload_file_form').style.display = 'none';
       }
     </script>
   </head>
@@ -204,7 +209,7 @@
           </td>
           <td colspan="3" class="ccc">
             <a href="https://github.com/MickPlaYer/FileWebServer" target="_blank" style="font-size: 25pt;">File Web Server</a>
-            <form action="/chdisk" method="post">
+            <li>Change Disk<form action="/chdisk" method="post">
               <select name="disk">
                 <% disk.disks.each_with_index do | val, index | %>
                   <option <%= 'selected' if index == disk.index %> value='<%= index %>'><%= val %></option>
@@ -212,6 +217,8 @@
               </select>
               <input type="submit" value="Go">
             </form>
+            <li>Upload File
+              <br><button type="button" onclick='UploadFile()'>UploadFile</button>
           </td>
         </tr>
       </tfoot>
@@ -270,6 +277,15 @@
         </select>
         <br><br>
         <input type="submit" value="Move">
+        <input type="hidden" name="path" value="<%= path %>">
+        <button type="button" onclick='HideAll()'>Cancle</button>
+      </form>
+      <form id='upload_file_form' class='move_file_form' action='/upload' method='post' enctype='multipart/form-data'>
+        <div style="font-size: 20px;"><b>Upload File</b></div>
+        <br>
+        <input type='file' name='file'></input>
+        <br><br>
+        <input type='submit' value='Upload!'>
         <input type="hidden" name="path" value="<%= path %>">
         <button type="button" onclick='HideAll()'>Cancle</button>
       </form>

@@ -58,3 +58,14 @@ post '/zip' do
   FileUtils.move out_file, './public/' + out_file
   redirect "http://#{request.host}:#{ENV['STATIC_FILE_PORT']}/#{out_file}"
 end
+
+post "/upload" do
+  redirect back if params['file'].nil?
+  path = File.join(settings.public_folder, params['path'])
+  file_name = params['file'][:filename]
+  file_name = 'uploaded_' + file_name if File.exist? File.join(path, file_name)
+  File.open(File.join(path, file_name), "w") do |f|
+    f.write(params['file'][:tempfile].read)
+  end
+  redirect back
+end
