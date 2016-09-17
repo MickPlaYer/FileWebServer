@@ -39,18 +39,15 @@ post '/move' do
   file = params['file']
   folder = params['folder']
   path = settings.public_folder + params['path']
-  origin = FileUtils.pwd
   begin
-    FileUtils.cd path
-    FileUtils.move file, path + folder + file
+    FileUtils.move File.join(path, file), File.join(path, folder, file)
   rescue Exception => e
     result = e.message + "\n"
     result += e.backtrace.join("\n")
     puts result
-  ensure
-    FileUtils.cd origin
+    redirect back
   end
-  redirect back
+  redirect File.join(params['path'], folder)
 end
 
 post '/zip' do

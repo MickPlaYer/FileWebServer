@@ -259,7 +259,9 @@
         <input type="hidden" style="width: 500px;" id="file_name_be_move" name="file"><br>
         Folder Name:<br>
         <select name="folder" style="width: 500px;">
-          <option value="../">../</option>
+          <% unless no_back %>
+            <option value="../">../</option>
+          <% end %>
           <% files.each do | e | %>
             <%if e['dir']%>
               <option value="<%= e['name'] %>/"><%= e['name'] %>/</option>
