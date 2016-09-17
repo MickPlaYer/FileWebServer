@@ -1,1 +1,1 @@
-foreman start
+foreman start -e PortSetting.env

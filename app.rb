@@ -59,5 +59,5 @@ post '/zip' do
   out_file = Time.now.to_i.to_s + '_' + folder + '.zip'
   FileHelper.generator_zip_file path + folder, out_file
   FileUtils.move out_file, './public/' + out_file
-  redirect 'http://' + request.host + ':3031/' + out_file
+  redirect "http://#{request.host}:#{ENV['STATIC_FILE_PORT']}/#{out_file}"
 end

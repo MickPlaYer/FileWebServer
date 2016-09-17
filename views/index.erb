@@ -221,9 +221,9 @@
         <tr id='file_<%= i %>' class="file">
           <td class="name">
             <input id="name_sort" type="hidden" value="<%= '_dir_' if e["dir"] %><%= e["name"] %>"/>
-            <%= '<img src="http://' + request.host + ':3031/dir.png">' if e["dir"] %>
+            <%= '<img src="http://' + request.host + ':' + ENV['STATIC_FILE_PORT'] + '/dir.png">' if e["dir"] %>
             <% if e["name"].match(/\.mp4$/) %>
-              <a href="<%= 'http://' + request.host + ':3032' + path + e["name"] %>"><%= e["name"] %></a>
+              <a href="<%= 'http://' + request.host + ':' + ENV['MEDIA_FILE_PORT'] + path + e["name"] %>"><%= e["name"] %></a>
             <% else %>
               <a <%= 'download' unless e["dir"] %> href="<%= e["name"] %>"><%= e["name"] %></a>
             <% end %>

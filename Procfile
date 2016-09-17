@@ -1,3 +1,3 @@
-application: ruby app.rb -p 80
-static_file: ruby ./backend/static_file.rb -p 3031
-media_file: ruby ./backend/media_file.rb -p 3032
+application: ruby app.rb -p $APP_PORT
+static_file: ruby ./backend/static_file.rb -p $STATIC_FILE_PORT
+media_file: ruby ./backend/media_file.rb -p $MEDIA_FILE_PORT
