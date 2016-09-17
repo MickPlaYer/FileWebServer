@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>File Web Server</title>
+    <style type="text/css">
+      body{
+        font-family: "Lucida Grande",Calibri,Arial;
+        font-size: 9pt;
+        color: #333;
+        background: #f8f8f8;
+      }
+      a{
+        color: #666666;
+        font-size: 11pt;
+        font-weight: bold;
+        text-decoration: none;
+      }
+      a:hover{
+        color: #000;
+      }
+      table{
+        margin: 0 auto;
+        padding: 0;
+        width: 80%;
+      }
+      table td{
+        padding: 5px;
+      }
+      thead td{
+        padding-left: 0;
+        font-family: "Trebuchet MS";
+        font-size: 14pt;
+        font-weight: bold;
+      }
+        tbody td.name{
+        width: 70%;
+      }
+      tbody .file td{
+        background: #fff;
+        border: solid 1px #ddd;
+      }
+      tbody tr.file:hover td{
+        background: #C4C4C4;
+      }
+      tbody .file td.size,tbody .file td.time{
+        white-space: nowrap;
+        padding: 5px 10px;
+      }
+      tbody .file td.size span{
+        color: #999;
+        font-size: 8pt;
+      }
+      tbody .file td.time{
+        color: #555;
+      }
+      tbody .file td.action{
+        color: #555;
+        font-weight: bold;
+        width: 48px;
+      }
+      tfoot td{
+        padding: 5px 0;
+        color: #777;
+        font-size: 14pt;
+        background: #f8f8f8;
+        border-color: #f8f8f8;
+      }
+      tfoot td.ccc{
+        text-align: right;white-space: nowrap;
+      }
+      .move_file_form{
+        display: none;
+        position: fixed;
+        left: 50px;
+        top: 50px;
+        background: #fff;
+        border:solid 1px #ddd;
+        padding: 20px;
+        font-size: 14px;
+      }
+      .back_dock {
+        display: none;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background: rgba(0, 0, 0, 0.5);
+      }
+    </style>
+    <script type="text/javascript">
+      var sortedOn = -1;
+
+      function SortTable(sortOn) {
+
+        var table = document.getElementById('table_files');
+        var tbody = table.getElementsByTagName('tbody')[0];
+        var rows = tbody.getElementsByTagName('tr');
+
+        var rowArray = new Array();
+        for (var i=0, length=rows.length; i<length; i++) {
+          rowArray[i] = new Object;
+          rowArray[i].oldIndex = i;
+          rowArray[i].value = rows[i].getElementsByTagName('td')[sortOn].children[0].value;
+        }
+
+        if (sortOn == sortedOn) {
+          rowArray.reverse();
+        } else {
+          sortedOn = sortOn;
+          if((sortOn == 1) || (sortOn == 2)) {
+        	  rowArray.sort(RowCompareNumbers);
+          } else {
+        	  rowArray.sort(RowCompareString);
+          }
+        }
+
+        var newTbody = document.createElement('tbody');
+        for (var i=0, length=rowArray.length ; i<length; i++) {
+          newTbody.appendChild(rows[rowArray[i].oldIndex].cloneNode(true));
+        }
+
+        table.replaceChild(newTbody, tbody);
+      }
+
+      function RowCompareString(a, b) {
+        var aVal = a.value.toLowerCase();
+        var bVal = b.value.toLowerCase();
+        return aVal.localeCompare( bVal );
+      }
+      function RowCompareDefault(a, b) {
+        var aVal = a.value.toLowerCase();
+        var bVal = b.value.toLowerCase();
+        return (aVal == bVal ? 0 : (aVal > bVal ? 1 : -1));
+      }
+      function RowCompareNumbers(a, b) {
+        var aVal = parseInt( a.value);
+        var bVal = parseInt(b.value);
+        return (aVal - bVal);
+      }
+      function MoveFile(index) {
+        file = document.getElementById('file_' + index);
+        file_name = file.getElementsByTagName('input')[0]['value'];
+        document.getElementById('back_dock').style.display = 'block';
+        document.getElementById('move_file_form').style.display = 'block';
+        document.getElementById('file_be_move').innerText = file_name;
+        document.getElementById('file_name_be_move').value = file_name;
+      }
+      function ZipDir(index) {
+        var file = document.getElementById('file_' + index);
+        var folder_name = file.getElementsByTagName('input')[0]['value'];
+        var name = folder_name.match('_dir_\(.*\)')[1];
+        var path = "<%= path %>"
+        var params = { path: path, folder: name }
+        var form = document.createElement("form");
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/zip');
+        form.setAttribute('style', 'display:none;');
+        for(var key in params) {
+          if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+            form.appendChild(hiddenField);
+          }
+        }
+        document.body.appendChild(form);
+        form.submit();
+      }
+      function HideAll() {
+        document.getElementById('back_dock').style.display = 'none';
+        document.getElementById('move_file_form').style.display = 'none';
+      }
+    </script>
+  </head>
+  <body onload="SortTable(0);">
+    <table cellpadding="0" cellspacing="1" id="table_files">
+      <thead>
+        <tr>
+          <td colspan="3">
+            <%= path %>
+          </td>
+        </tr>
+        <% unless no_back %>
+        <tr> <td colspan="3"><a href="../" style="font-size:70%;">back</a></td> </tr>
+        <% end %>
+        <tr>
+          <td>
+            <a onclick="SortTable(0);" href="#">Name</a>
+          </td>
+          <td>
+            <a onclick="SortTable(1);" href="#">Size</a>
+          </td>
+          <td>
+            <a onclick="SortTable(2);" href="#">Last modified</a>
+          </td>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <td class="total">
+          </td>
+          <td colspan="3" class="ccc">
+            <a style="font-size: 25pt;">File Web Server</a>
+            <form action="/chdisk" method="post">
+              <select name="disk">
+                <% disk.disks.each_with_index do | val, index | %>
+                  <option <%= 'selected' if index == disk.index %> value='<%= index %>'><%= val %></option>
+                <% end %>
+              </select>
+              <input type="submit" value="Go">
+            </form>
+          </td>
+        </tr>
+      </tfoot>
+      <tbody>
+
+        <% files.each_with_index do | e, i | %>
+        <tr id='file_<%= i %>' class="file">
+          <td class="name">
+            <input id="name_sort" type="hidden" value="<%= '_dir_' if e["dir"] %><%= e["name"] %>"/>
+            <%= '<img src="http://' + request.host + ':3031/dir.png">' if e["dir"] %>
+            <% if e["name"].match(/\.mp4$/) %>
+              <a href="<%= 'http://' + request.host + ':3032' + path + e["name"] %>"><%= e["name"] %></a>
+            <% else %>
+              <a <%= 'download' unless e["dir"] %> href="<%= e["name"] %>"><%= e["name"] %></a>
+            <% end %>
+          </td>
+          <td class="size">
+            <input id="size_sort" type="hidden" value="<%= e["size"] %>"/>
+            <%= FileHelper.format_size e["size"] %>
+          </td>
+          <td class="time">
+            <input id="time_sort" type="hidden" value="<%= e["time"].to_i %>"/>
+            <%= e["time"].strftime "%Y-%m-%d" %>
+          </td>
+          <% if e["dir"] %>
+            <td class="action">
+              <span style="cursor:pointer;" onclick="ZipDir(<%= i %>)">Zip</span>
+            </td>
+          <% else %>
+            <td class="action">
+              <span style="cursor:pointer;" onclick="MoveFile(<%= i %>)">Move</span>
+            </td>
+          <% end %>
+        </tr>
+        <% end %>
+
+      </tbody>
+    </table>
+
+    <div id='back_dock' class='back_dock'>
+      <form id='move_file_form' class='move_file_form' action="/move" method="post">
+        <div style="font-size: 20px;"><b>Move File</b></div>
+        File Name:<br>
+        <span style="width: 500px;" id="file_be_move"></span>
+        <input type="hidden" style="width: 500px;" id="file_name_be_move" name="file"><br>
+        Folder Name:<br>
+        <select name="folder" style="width: 500px;">
+          <option value="../">../</option>
+          <% files.each do | e | %>
+            <%if e['dir']%>
+              <option value="<%= e['name'] %>/"><%= e['name'] %>/</option>
+            <% end %>
+          <% end %>
+        </select>
+        <br><br>
+        <input type="submit" value="Move">
+        <input type="hidden" name="path" value="<%= path %>">
+        <button type="button" onclick='HideAll()'>Cancle</button>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title><%= File.basename(path) %></title>
+    <meta name="viewport" content="width=device-width">
+    <style type="text/css">
+      body {
+        font-family: "Lucida Grande",Calibri,Arial;
+        color: #777;
+        background-color: rgb(0, 0, 0);
+      }
+      a{
+        color: #777;
+        font-weight: bold;
+        text-decoration: none;
+      }
+      video {
+        width: 1280px;
+        margin: 0 auto;
+        display: block;
+      }
+
+    </style>
+  </head>
+  <body style="margin: 0px;">
+    <h1 style="width:1280px;margin:auto;"><%= File.basename(path) %></h1>
+    <video controls autoplay poster="http://<%= request.host + ':3031/background.png' %>">
+      <source src="http://<%= request.host + path %>" type="video/mp4">
+    </video>
+    <div style="width:1280px;margin:auto;"><a href="javascript:history.back()">Back</a></div>
+  </body>
+</html>
