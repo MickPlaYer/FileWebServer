@@ -232,8 +232,9 @@
             <% if e["name"].match(/\.mp4$/) %>
               <a href="<%= 'http://' + request.host + ':' + ENV['MEDIA_FILE_PORT'] + path + e["name"] %>"><%= e["name"] %></a>
             <% else %>
-              <a <%= 'download' unless e["dir"] %> href="<%= e["name"] %>"><%= e["name"] %></a>
+              <a href="<%= e["name"] %>"><%= e["name"] %></a>
             <% end %>
+            <%= "<a download href='#{e['name']}'><img src='http://#{request.host}:#{ENV['STATIC_FILE_PORT']}/dl.png'></a>" unless e["dir"] %>
           </td>
           <td class="size">
             <input id="size_sort" type="hidden" value="<%= e["size"] %>"/>
