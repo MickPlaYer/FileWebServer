@@ -151,6 +151,10 @@
         document.getElementById('back_dock').style.display = 'block';
         document.getElementById('upload_file_form').style.display = 'block';
       }
+      function MakeFolder() {
+        document.getElementById('back_dock').style.display = 'block';
+        document.getElementById('make_folder_form').style.display = 'block';
+      }
       function ZipDir(index) {
         var file = document.getElementById('file_' + index);
         var folder_name = file.getElementsByTagName('input')[0]['value'];
@@ -177,6 +181,7 @@
         document.getElementById('back_dock').style.display = 'none';
         document.getElementById('move_file_form').style.display = 'none';
         document.getElementById('upload_file_form').style.display = 'none';
+        document.getElementById('make_folder_form').style.display = 'none';
       }
     </script>
   </head>
@@ -219,6 +224,8 @@
             </form>
             <li>Upload File
               <br><button type="button" onclick='UploadFile()'>UploadFile</button>
+            <li>Make Folder
+              <br><button type="button" onclick='MakeFolder()'>MakeFolder</button>
           </td>
         </tr>
       </tfoot>
@@ -286,7 +293,16 @@
         <br>
         <input type='file' name='file'></input>
         <br><br>
-        <input type='submit' value='Upload!'>
+        <input type='submit' value='Upload'>
+        <input type="hidden" name="path" value="<%= path %>">
+        <button type="button" onclick='HideAll()'>Cancle</button>
+      </form>
+      <form id='make_folder_form' class='move_file_form' action='/mkdir' method='post'>
+        <div style="font-size: 20px;"><b>Make Folder</b></div>
+        Folder Name:<br>
+        <input type='name' name='name'></input>
+        <br><br>
+        <input type='submit' value='Make'>
         <input type="hidden" name="path" value="<%= path %>">
         <button type="button" onclick='HideAll()'>Cancle</button>
       </form>

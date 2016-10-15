@@ -69,3 +69,13 @@ post '/upload' do
   end
   redirect back
 end
+
+post '/mkdir' do
+  dir_name = params['name']
+  path = settings.public_folder + params['path']
+  is_exist = Dir.exist? File.join(path, dir_name)
+  has_illegal_name = dir_name =~ /[\x00\/\\:\*\?\"<>\|]/
+  redirect back if is_exist || has_illegal_name
+  FileUtils.mkdir File.join(path, dir_name)
+  redirect back
+end
