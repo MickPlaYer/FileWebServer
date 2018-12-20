@@ -1,31 +1,39 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 require 'sinatra'
-require 'thin'
+require 'socket'
+require 'launchy'
 require './src/file_helper'
 require './src/disk_helper'
 
 disk_helper = DiskHelper.new
 disk_helper.change_disk 1
 
+ENV['STATIC_FILE_PORT'] ||= settings.port.to_s
+ENV['MEDIA_FILE_PORT'] ||= settings.port.to_s
+
 set :public_folder, disk_helper.current_disk
-set :server, 'thin'
+set :server, 'puma'
 set :bind, '0.0.0.0'
 
 get '/favicon.ico' do
   204
 end
 
-get /(.*)/ do
+get(/(.*)/) do
   path = params['captures'].first
+  path += '/' if path[-1] != '/'
   no_back = (path == '/')
-  dir = settings.public_folder + path
-  redirect path + '/' unless path =~ /\/$/
+  dir = settings.public_folder + CGI.unescape(path)
   begin
     files = FileHelper.get_file_list dir
-  rescue
+  rescue StandardError
     files = []
   end
-  erb :index, locals: { path: path, files: files, disk: disk_helper, no_back: no_back }
+  erb :index, locals: { path: path,
+                        files: files,
+                        disk: disk_helper,
+                        no_back: no_back }
 end
 
 post '/chdisk' do
@@ -41,22 +49,13 @@ post '/move' do
   path = settings.public_folder + params['path']
   begin
     FileUtils.move File.join(path, file), File.join(path, folder, file)
-  rescue Exception => e
+  rescue StandardError => e
     result = e.message + "\n"
     result += e.backtrace.join("\n")
     puts result
     redirect back
   end
   redirect File.join(params['path'], folder)
-end
-
-post '/zip' do
-  path = settings.public_folder + params['path']
-  folder = params['folder']
-  out_file = Time.now.to_i.to_s + '_' + folder + '.zip'
-  FileHelper.generator_zip_file path + folder, out_file
-  FileUtils.move out_file, './public/' + out_file
-  redirect "http://#{request.host}:#{ENV['STATIC_FILE_PORT']}/#{out_file}"
 end
 
 post '/upload' do
@@ -74,8 +73,16 @@ post '/mkdir' do
   dir_name = params['name']
   path = settings.public_folder + params['path']
   is_exist = Dir.exist? File.join(path, dir_name)
-  has_illegal_name = dir_name =~ /[\x00\/\\:\*\?\"<>\|]/
+  has_illegal_name = dir_name =~ %r{\x00/\\:\*\?\"<>\|}
   redirect back if is_exist || has_illegal_name
   FileUtils.mkdir File.join(path, dir_name)
   redirect back
+end
+
+Socket.ip_address_list.detect do |intf|
+  next unless intf.ipv4_private?
+
+  ip = intf.ip_address.to_s
+  url = "http://#{ip}:#{settings.port}/"
+  Launchy.open(url)
 end

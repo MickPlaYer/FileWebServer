@@ -1,8 +1,12 @@
-source 'https://rubygems.org'
-ruby '2.2.4'
+# frozen_string_literal: true
 
-gem 'sinatra'
-gem 'thin'
-gem 'json'
+source 'http://rubygems.org'
+
+ruby '2.5.3'
+
 gem 'foreman'
+gem 'json'
+gem 'launchy'
+gem 'puma'
 gem 'rubyzip'
+gem 'sinatra'

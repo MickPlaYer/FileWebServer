@@ -1,12 +1,11 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 require 'sinatra'
-require 'thin'
 
 set :root, "#{settings.root}/.."
-set :server, 'thin'
 set :bind, '0.0.0.0'
 
-get /(.*)/ do
+get(/(.*)/) do
   path = params['captures'].first
-  erb :video, :locals => { :path => path }
+  erb :video, locals: { path: path }
 end

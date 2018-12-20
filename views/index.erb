@@ -155,28 +155,6 @@
         document.getElementById('back_dock').style.display = 'block';
         document.getElementById('make_folder_form').style.display = 'block';
       }
-      function ZipDir(index) {
-        var file = document.getElementById('file_' + index);
-        var folder_name = file.getElementsByTagName('input')[0]['value'];
-        var name = folder_name.match('_dir_\(.*\)')[1];
-        var path = "<%= path %>"
-        var params = { path: path, folder: name }
-        var form = document.createElement("form");
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', '/zip');
-        form.setAttribute('style', 'display:none;');
-        for(var key in params) {
-          if(params.hasOwnProperty(key)) {
-            var hiddenField = document.createElement("input");
-            hiddenField.setAttribute("type", "hidden");
-            hiddenField.setAttribute("name", key);
-            hiddenField.setAttribute("value", params[key]);
-            form.appendChild(hiddenField);
-          }
-        }
-        document.body.appendChild(form);
-        form.submit();
-      }
       function HideAll() {
         document.getElementById('back_dock').style.display = 'none';
         document.getElementById('move_file_form').style.display = 'none';
@@ -194,7 +172,7 @@
           </td>
         </tr>
         <% unless no_back %>
-        <tr> <td colspan="3"><a href="../" style="font-size:70%;">back</a></td> </tr>
+        <tr> <td colspan="3"><a href="<%= path + '../' %>" style="font-size:70%;">back</a></td> </tr>
         <% end %>
         <tr>
           <td>
@@ -239,7 +217,7 @@
             <% if e["name"].match(/\.mp4$/) %>
               <a href="<%= 'http://' + request.host + ':' + ENV['MEDIA_FILE_PORT'] + path + e["name"] %>"><%= e["name"] %></a>
             <% else %>
-              <a href="<%= e["name"] %>"><%= e["name"] %></a>
+              <a href="<%= path + e["name"] %>"><%= e["name"] %></a>
             <% end %>
             <%= "<a download href='#{e['name']}'><img src='http://#{request.host}:#{ENV['STATIC_FILE_PORT']}/dl.png'></a>" unless e["dir"] %>
           </td>
@@ -251,11 +229,7 @@
             <input id="time_sort" type="hidden" value="<%= e["time"].to_i %>"/>
             <%= e["time"].strftime "%Y-%m-%d" %>
           </td>
-          <% if e["dir"] %>
-            <td class="action">
-              <span style="cursor:pointer;" onclick="ZipDir(<%= i %>)">Zip</span>
-            </td>
-          <% else %>
+          <% unless e["dir"] %>
             <td class="action">
               <span style="cursor:pointer;" onclick="MoveFile(<%= i %>)">Move</span>
             </td>

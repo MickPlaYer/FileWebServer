@@ -1,1 +1,1 @@
-foreman start -e PortSetting.env
+bundle exec foreman start -e PortSetting.env
