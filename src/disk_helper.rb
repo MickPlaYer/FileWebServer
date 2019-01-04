@@ -5,18 +5,27 @@ class DiskHelper
 
   def initialize
     @disks = []
-    file_system = WIN32OLE.new("Scripting.FileSystemObject")
+    file_system = WIN32OLE.new('Scripting.FileSystemObject')
     file_system.Drives.each do |d|
-      @disks << d.DriveLetter + ':/'
+      @disks << d.DriveLetter
     end
     @index = 0
   end
 
   def current_disk
-    @disks[@index]
+    "#{@disks[@index]}:/"
   end
 
-  def change_disk option
-    @index = option
+  def path
+    "/#{@disks[@index].to_s.downcase}"
+  end
+
+  def change_disk(option)
+    case option
+    when Integer
+      @index = option
+    when String
+      @index = @disks.index(option.upcase)
+    end
   end
 end

@@ -1,0 +1,15 @@
+<tbody>
+  <tr>
+    <td colspan="3">
+      <div id="disks">
+        <% disk_helper.disks.each do |disk| %>
+          <a href="<%= app_url("/#{disk.downcase}") %>">
+            <div class="disk">
+              <%= disk %>:\
+            </div>
+          </a>
+        <% end %>
+      </div>
+    </td>
+  </tr>
+</tbody>
