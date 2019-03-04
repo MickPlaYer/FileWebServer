@@ -1,25 +1,5 @@
 <thead>
-  <tr>
-    <td colspan="3">
-      <%=
-        stack = [disk_helper.path]
-        path.split('/').map do |route|
-          next if route == ''
-          stack << route
-          "/<a class=\"breadcrumb\" href=\"#{app_url(stack.join('/'))}\">#{route}</a>"
-        end.compact.join
-      %>
-    </td>
-  </tr>
-  <% if path != '/' %>
-    <tr>
-      <td colspan="3">
-        <a href="<%= stack[0..-2].join('/') %>/" style="font-size: 11px;">
-          back
-        </a>
-      </td>
-    </tr>
-  <% end %>
+  <%= erb :_breadcrumb, locals: locals %>
   <tr>
     <td>
       <a onclick="SortTable(0);" href="javascript:void(0)">Name</a>
@@ -43,12 +23,12 @@
             <%= e['name'] %>
           </a>
         <% else %>
-          <% if e['name'].match(/\.mp4$/) %>
+          <% if e['ext'] == '.mp4' %>
             <a href="<%= media_url(full_path + e['name']) %>">
               <%= e['name'] %>
             </a>
           <% else %>
-            <a href="<%= app_url('/__file__' + full_path + e['name']) %>">
+            <a xFileClickAlert="<%= e['ext'] %>" href="<%= app_url('/__file__' + full_path + e['name']) %>">
               <%= e['name'] %>
             </a>
           <% end %>

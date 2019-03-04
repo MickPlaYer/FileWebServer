@@ -1,0 +1,21 @@
+<tr>
+  <td colspan="3">
+    <%=
+      stack = [disk_helper.path]
+      path.split('/').map do |route|
+        next if route == ''
+        stack << route
+        "/<a class=\"breadcrumb\" href=\"#{app_url(stack.join('/'))}\">#{route}</a>"
+      end.compact.join
+    %>
+  </td>
+</tr>
+<% if path != '/' %>
+  <tr>
+    <td colspan="3">
+      <a href="<%= stack[0..-2].join('/') %>/" style="font-size: 11px;">
+        back
+      </a>
+    </td>
+  </tr>
+<% end %>

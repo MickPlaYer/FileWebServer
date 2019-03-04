@@ -22,27 +22,32 @@ get('/favicon.ico') { 204 }
 
 get('/') { erb :disks }
 
+get('/__sinatra__/*path') { redirect static_url request.path }
+
+get(%r{/__file__/?}) { halt 404 }
 get('/__file__/:disk*path') do |disk, path|
   disk_helper.change_disk(disk)
   file = disk_helper.current_disk + CGI.unescape(path)
   send_file file
+rescue DiskHelper::NoDiskError
+  halt 404
 end
 
 get('/:disk*path') do |disk, path|
   disk_helper.change_disk(disk)
   path += '/' unless path.end_with?('/')
   dir = disk_helper.current_disk + CGI.unescape(path)
-  puts disk, path
-  puts dir
-  begin
-    files = FileHelper.get_file_list(dir)
-  rescue StandardError
-    files = []
-  end
+  files = FileHelper.get_file_list(dir)
   erb :index, locals: {
     path: path,
     full_path: disk_helper.path + path,
     files: files
   }
+rescue FileHelper::NotDirError
+  erb :index_404, locals: {
+    path: path,
+    full_path: disk_helper.path + path
+  }
+rescue DiskHelper::NoDiskError
+  redirect '/'
 end
-

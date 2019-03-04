@@ -1,6 +1,7 @@
 require 'win32ole'
 
 class DiskHelper
+  NoDiskError = Class.new(StandardError)
   attr_reader :disks, :index
 
   def initialize
@@ -13,6 +14,8 @@ class DiskHelper
   end
 
   def current_disk
+    raise NoDiskError if @index.nil? || @disks[@index].nil?
+
     "#{@disks[@index]}:/"
   end
 

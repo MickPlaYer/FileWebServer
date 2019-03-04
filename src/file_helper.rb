@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
 class FileHelper # :nodoc:
+  NotDirError = Class.new(StandardError)
   UNIT = %w[KB MB GB TB]
+
   def self.get_file_list(path)
+    raise NotDirError unless Dir.exists?(path)
+
     file_list = []
     Dir.entries(path, encoding: 'UTF-8').each do |e|
-      next if (e == '.') || (e == '..')
+      next if e.in?(%w[. ..])
 
       file_list << get_file_detail(path + e)
     end
@@ -16,6 +20,7 @@ class FileHelper # :nodoc:
   def self.get_file_detail(filename)
     file = {}
     file['name'] = File.basename(filename)
+    file['ext'] = File.extname(filename)
     file['time'] = File.mtime(filename)
     file['dir'] = File.directory?(filename)
     file['size'] = file['dir'] ? -1 : File.size(filename)

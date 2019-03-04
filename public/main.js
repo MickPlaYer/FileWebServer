@@ -44,3 +44,21 @@ function RowCompareNumbers(a, b) {
   var bVal = parseInt(b.value)
   return (aVal - bVal)
 }
+
+const safeExts = ['.mp4']
+
+function FileClickAlert(event) {
+  const ext = event.target.getAttribute('xFileClickAlert')
+  if (!safeExts.includes(ext)) {
+    const result = confirm(`You are opening a ${ext} file. Are you sure?`)
+    if (!result) {
+      event.preventDefault()
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[xFileClickAlert]').forEach(tag => {
+    tag.addEventListener('click', FileClickAlert)
+  })
+})
